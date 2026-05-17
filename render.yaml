@@ -1,0 +1,34 @@
+# render.yaml — Brenne Aerial Bot (monorepo root)
+# Render lit ce fichier automatiquement depuis la racine du dépôt.
+
+services:
+  - type: web
+    name: brenne-aerial-bot
+    runtime: node
+    plan: starter
+    rootDir: artifacts/discord-bot
+    buildCommand: npm install --omit=dev
+    startCommand: node src/index.js
+    healthCheckPath: /healthz
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: LAVALINK_SERENITIA_HOST
+        value: lavalinkv4.serenetia.com
+      - key: LAVALINK_SERENITIA_PORT
+        value: "443"
+      - key: LAVALINK_SERENITIA_PASSWORD
+        value: https://seretia.link/discord
+      - key: LAVALINK_SERENITIA_SECURE
+        value: "true"
+      - key: LAVALINK_AJIEBLOGS_HOST
+        value: lavalink.jirayu.net
+      - key: LAVALINK_AJIEBLOGS_PORT
+        value: "443"
+      - key: LAVALINK_AJIEBLOGS_PASSWORD
+        value: youshallnotpass
+      - key: LAVALINK_AJIEBLOGS_SECURE
+        value: "true"
+      # Les secrets suivants doivent être saisis manuellement dans Render :
+      # DISCORD_TOKEN, CLIENT_ID, GUILD_ID, DATABASE_URL
