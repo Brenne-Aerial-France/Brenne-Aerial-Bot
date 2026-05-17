@@ -1,0 +1,229 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: dashboard
+    description: Dashboard monitoring operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /dashboard/status:
+    get:
+      operationId: getDashboardStatus
+      tags: [dashboard]
+      summary: Bot status
+      description: Returns live bot status including Discord connection, Lavalink nodes, and guilds
+      responses:
+        "200":
+          description: Bot status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStatus"
+
+  /dashboard/stats:
+    get:
+      operationId: getDashboardStats
+      tags: [dashboard]
+      summary: Usage statistics
+      description: Returns usage counters since the bot last started
+      responses:
+        "200":
+          description: Usage stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  /dashboard/tickets:
+    get:
+      operationId: getDashboardTickets
+      tags: [dashboard]
+      summary: Recent tickets
+      description: Returns the most recent support tickets
+      responses:
+        "200":
+          description: Recent tickets list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecentTicketsResponse"
+
+  /dashboard/missions:
+    get:
+      operationId: getDashboardMissions
+      tags: [dashboard]
+      summary: Recent missions
+      description: Returns the most recent drone missions
+      responses:
+        "200":
+          description: Recent missions list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecentMissionsResponse"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    LavalinkNodeStatus:
+      type: object
+      properties:
+        name:
+          type: string
+        connected:
+          type: boolean
+      required:
+        - name
+        - connected
+
+    DashboardStatus:
+      type: object
+      properties:
+        online:
+          type: boolean
+        uptime:
+          type: ["number", "null"]
+          description: Bot uptime in seconds
+        ping:
+          type: ["number", "null"]
+          description: Discord WebSocket ping in ms
+        guilds:
+          type: number
+        username:
+          type: ["string", "null"]
+        tag:
+          type: ["string", "null"]
+        lavalinkNodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/LavalinkNodeStatus"
+        activePlayers:
+          type: number
+      required:
+        - online
+        - uptime
+        - ping
+        - guilds
+        - username
+        - tag
+        - lavalinkNodes
+        - activePlayers
+
+    DashboardStats:
+      type: object
+      properties:
+        commandsUsed:
+          type: number
+        aiCalls:
+          type: number
+        ticketsOpened:
+          type: number
+        missionsLogged:
+          type: number
+        startedAt:
+          type: string
+          description: ISO timestamp when the bot last started
+      required:
+        - commandsUsed
+        - aiCalls
+        - ticketsOpened
+        - missionsLogged
+        - startedAt
+
+    RecentTicket:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        username:
+          type: string
+        category:
+          type: string
+        status:
+          type: string
+          description: "open or closed"
+        createdAt:
+          type: string
+      required:
+        - id
+        - userId
+        - username
+        - category
+        - status
+        - createdAt
+
+    RecentTicketsResponse:
+      type: object
+      properties:
+        tickets:
+          type: array
+          items:
+            $ref: "#/components/schemas/RecentTicket"
+      required:
+        - tickets
+
+    RecentMission:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        username:
+          type: string
+        lieu:
+          type: string
+        pilote:
+          type: string
+        date:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - userId
+        - username
+        - lieu
+        - pilote
+        - date
+        - createdAt
+
+    RecentMissionsResponse:
+      type: object
+      properties:
+        missions:
+          type: array
+          items:
+            $ref: "#/components/schemas/RecentMission"
+      required:
+        - missions
